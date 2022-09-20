@@ -1,0 +1,39 @@
+;
+;
+; Created: 5/4/2017 1:22:41 PM
+; Author : Saeid
+; assuming that clock pulses are fed into pin PORTD6, write a program
+; to measure the period of the pulses. Place the binary result on PORTA
+; and PORTB
+
+
+.INCLUDE "M32DEF.INC"
+	LDI R16, 0xFF
+	OUT DDRA, R16
+	OUT DDRB, R16
+	OUT PORTD, R16
+BEGIN:
+	LDI R20, 0x00
+	OUT TCCR1A, R20
+	LDI R20, 0x41
+	OUT TGGR1B, R20
+L1:	IN R21, TIFR
+	SBRS R21, ICF1
+	RJMP L1
+	IN R23, ICR1L
+	IN R24, ICR1H
+	OUT TIFR, R21
+L2:	IN R21,TIFR
+	SBRS R21,ICF1
+	RJMP L2
+	OUT TIFR,R21
+	IN R22, ICR1L
+	SUB R22,R23
+	OUT TIFR,R21
+	IN R22,ICR1L
+	SUB R22,R23
+	OUT PORTA,R22
+	IN R22,ICR1H
+	SBC R22,R24
+	OUT PORTB,R22
+L3: RJMP L3
